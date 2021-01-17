@@ -1,0 +1,101 @@
+---
+title: "simulated data"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+```{r}
+library(tidyverse)
+```
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+set.seed(1)
+
+age <- rpois(120000, 8:80)
+
+sex <- rbinom(120000, 1, 0.5)
+
+ses <- rbinom(120000, 5, 0.5)
+```
+
+
+```{r}
+HbA1c <- rnorm(120000, 4:10) 
+
+HbA1c <- round(HbA1c, 1)
+
+
+df <- data.frame(age, sex , ses, HbA1c)
+
+df
+```
+```{r}
+class(df$sex) = "character"
+class(df$ses) = "character"
+
+#### Visualising distributions ####
+
+# distribution of ses
+
+ggplot(data = df) +
+  geom_bar(mapping = aes(x = ses ))
+
+df %>%
+  count(ses)
+
+#distribution of HbA1c
+
+ggplot(data = df) +
+  geom_histogram(mapping = aes(x= HbA1c), binwidth = 0.5)
+
+df %>%
+  count(HbA1c)
+
+#distribution of age
+
+ggplot(data = df) +
+  geom_histogram(mapping = aes(x= age), binwidth = 0.5)
+
+
+#RELATION BETWEEN HBA1C AND AGE
+
+ggplot(data = df ) +
+  geom_point(mapping = aes(x = age, y = HbA1c))
+
+ggplot(data = df) + 
+  geom_smooth(mapping = aes(x = age, y = HbA1c))
+
+#RELATION BETWEEN HBA1C AND AGE by sex
+ggplot(data = df) + 
+  geom_smooth(mapping = aes(x = age, y = HbA1c, colour = sex))
+
+# RELATION BETWEEN HBA1C AND AGE BY SES
+
+ggplot(data = df) + 
+  geom_smooth(mapping = aes(x = age, y = HbA1c, color = ses))
+
+ggplot(data = df, mapping = aes(x = age, y = HbA1c)) + 
+  geom_point(mapping = aes(color = ses)) +
+  geom_smooth(data = filter(df, ses == "1"), se = FALSE)
+
+
+ggplot(data = df, mapping = aes(x = age, y = HbA1c)) + 
+  geom_point(mapping = aes(color = ses)) +
+  geom_smooth(data = filter(df, ses == "0"), se = FALSE)
+
+# by boxplot
+ggplot(data = df, mapping = aes(x = age,y = HbA1c, group = ses)) +
+  geom_boxplot()
+
+ggplot(data = df, mapping = aes(x = age,y = HbA1c, group = sex)) +
+  geom_boxplot()
+```
